@@ -9,11 +9,13 @@ import (
 
 // Store is an interface for interacting with a backend user store
 type Store interface {
+	Migrate() error
+
 	GetAll() ([]types.User, error)
-	GetByID(id string) (types.User, error)
-	Create(types.User) error
-	Update(types.User) error
-	Delete(types.User) error
+	GetByID(id string) (*types.User, error)
+	Create(*types.User) error
+	Update(*types.User) error
+	Delete(*types.User) error
 }
 
 // NewStore returns a new store based on the provided database type
