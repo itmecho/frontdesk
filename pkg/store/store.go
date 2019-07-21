@@ -1,8 +1,6 @@
 package store
 
 import (
-	"errors"
-
 	"github.com/itmecho/frontdesk/pkg/types"
 	"github.com/sirupsen/logrus"
 )
@@ -18,14 +16,17 @@ type Store interface {
 	Delete(*types.User) error
 }
 
-// NewStore returns a new store based on the provided database type
-func NewStore(dbType, dsn string, logger *logrus.Logger) (Store, error) {
-	switch dbType {
-	case "postgres":
-		return newPostgresStore(dsn, logger)
-	case "cockroach":
-		return newPostgresStore(dsn, logger)
-	default:
-		return nil, errors.New("unsupported database type: " + dbType)
-	}
+// MigrationLogger implements the migrate.Logger interface
+type MigrationLogger struct {
+	*logrus.Logger
+}
+
+// Verbose checks if verbose logging should be used
+func (l *MigrationLogger) Verbose() bool {
+	return l.IsLevelEnabled(logrus.DebugLevel)
+}
+
+// WrapMigrationLogger returns a logger that can be used during migrations
+func WrapMigrationLogger(l *logrus.Logger) *MigrationLogger {
+	return &MigrationLogger{l}
 }

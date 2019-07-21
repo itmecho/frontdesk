@@ -3,16 +3,26 @@ package main
 import (
 	"github.com/itmecho/frontdesk/pkg/server"
 	"github.com/itmecho/frontdesk/pkg/store"
+	"github.com/itmecho/frontdesk/pkg/store/postgres"
 )
 
 func main() {
-	db, err := store.NewStore(databaseType, databaseDSN, logger)
-	if err != nil {
-		logger.Fatal(err)
+	var db store.Store
+	var err error
+
+	switch databaseType {
+	case "postgres":
+		db, err = postgres.NewStore(databaseDSN, logger)
+	default:
+		logger.Fatal("Unknown database type: ", databaseType)
 	}
 
-	if err := db.Migrate(); err != nil {
-		logger.Fatal("Failed to migrate store: ", err)
+	if err != nil {
+		logger.Fatal("Failed to create the database connection: ", err)
+	}
+
+	if err = db.Migrate(); err != nil {
+		logger.Fatal("Failed to migrate the database: ", err)
 	}
 
 	srv := server.NewServer(port, logger, db)

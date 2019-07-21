@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 
@@ -28,10 +29,10 @@ func (srv *Server) createUserHandler() http.HandlerFunc {
 		defer r.Body.Close()
 
 		type requestObject struct {
-			Name                 string `json:"name"`
-			Email                string `json:"email"`
-			Password             string `json:"password"`
-			PasswordConfirmation string `json:"password_confirmation"`
+			Name                 string          `json:"name"`
+			Email                string          `json:"email"`
+			Password             json.RawMessage `json:"password"`
+			PasswordConfirmation json.RawMessage `json:"password_confirmation"`
 		}
 
 		var newUserRequest requestObject
@@ -42,7 +43,7 @@ func (srv *Server) createUserHandler() http.HandlerFunc {
 			return
 		}
 
-		if newUserRequest.Password != newUserRequest.PasswordConfirmation {
+		if bytes.Compare(newUserRequest.Password, newUserRequest.PasswordConfirmation) != 0 {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			w.Write([]byte(`{"error":"password and password_confirmation do not match"}`))
 			return
@@ -58,6 +59,7 @@ func (srv *Server) createUserHandler() http.HandlerFunc {
 		newUser.SetPassword(newUserRequest.Password)
 
 		if err := srv.store.Create(newUser); err != nil {
+
 			srv.logger.Error("failed to create new user: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
