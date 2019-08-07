@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	uuid "github.com/satori/go.uuid"
 
@@ -125,5 +126,21 @@ func (srv *Server) handleAuthenticate() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(fmt.Sprintf("{\"token\":\"%s\"}", token)))
+	}
+}
+
+func (srv *Server) handleTokenCheck() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		header := r.Header.Get("Authorization")
+		token := strings.TrimPrefix(header, "Bearer ")
+
+		err := srv.auth.CheckToken(token)
+		if err != nil {
+			srv.logger.Error("token check failed: ", err)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }

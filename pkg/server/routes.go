@@ -16,7 +16,8 @@ func (srv *Server) routes() {
 	router.Route("/api/", func(r chi.Router) {
 		r.Get("/users", srv.handleUsersGet())
 		r.Post("/users", srv.handleUserCreate())
-		r.Post("/authenticate", srv.handleAuthenticate())
+		r.Get("/token/check", srv.handleTokenCheck())
+		r.Post("/token", srv.handleAuthenticate())
 	})
 
 	srv.Handler = router
