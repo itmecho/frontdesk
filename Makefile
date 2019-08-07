@@ -9,6 +9,10 @@ test:
 clean:
 	rm -f frontdesk
 
+local: build
+	docker-compose up -d
+	./frontdesk --auth-secret 9ucypsd58P9M3GqxewSuAA8H26auDVUk
+
 migration:
 	@test -n "$(name)" || { echo "'name' variable must be set"; exit 1; }
 	@test -d pkg/store/postgres/migrations || mkdir -p pkg/store/postgres/migrations
