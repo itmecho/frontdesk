@@ -11,7 +11,7 @@ import (
 	"github.com/itmecho/frontdesk/pkg/types"
 )
 
-func (srv *Server) getUsersHandler() http.HandlerFunc {
+func (srv *Server) handleUsersGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		out := json.NewEncoder(w)
 
@@ -24,7 +24,7 @@ func (srv *Server) getUsersHandler() http.HandlerFunc {
 	}
 }
 
-func (srv *Server) createUserHandler() http.HandlerFunc {
+func (srv *Server) handleUserCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestDecoder := json.NewDecoder(r.Body)
 		defer r.Body.Close()
@@ -82,7 +82,7 @@ func (srv *Server) createUserHandler() http.HandlerFunc {
 	}
 }
 
-func (srv *Server) authenticateHandler() http.HandlerFunc {
+func (srv *Server) handleAuthenticate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestDecoder := json.NewDecoder(r.Body)
 		defer r.Body.Close()
