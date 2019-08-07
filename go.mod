@@ -3,6 +3,7 @@ module github.com/itmecho/frontdesk
 go 1.12
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/golang-migrate/migrate/v4 v4.5.0

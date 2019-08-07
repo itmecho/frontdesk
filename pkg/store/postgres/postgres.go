@@ -56,6 +56,19 @@ func (s *Store) GetByID(id string) (*types.User, error) {
 	return &user, nil
 }
 
+// GetByEmail loads a user from the store by their email
+func (s *Store) GetByEmail(email string) (*types.User, error) {
+	s.logger.Info("loading user with email ", email)
+
+	var user types.User
+
+	if err := s.db.Get(&user, "SELECT * FROM users WHERE email = $1", email); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 // Create inserts a new user into the store
 func (s *Store) Create(user *types.User) error {
 	s.logger.Info("creating new user")

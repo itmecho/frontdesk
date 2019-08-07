@@ -11,6 +11,7 @@ type Store interface {
 
 	GetAll() ([]types.User, error)
 	GetByID(id string) (*types.User, error)
+	GetByEmail(email string) (*types.User, error)
 	Create(*types.User) error
 	Update(*types.User) error
 	Delete(*types.User) error

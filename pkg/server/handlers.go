@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	uuid "github.com/satori/go.uuid"
@@ -78,5 +79,51 @@ func (srv *Server) createUserHandler() http.HandlerFunc {
 		// TODO figure out how to handle the error from the following
 		responseEncoder.Encode(newUser)
 
+	}
+}
+
+func (srv *Server) authenticateHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		requestDecoder := json.NewDecoder(r.Body)
+		defer r.Body.Close()
+
+		type requestObject struct {
+			Email    string          `json:"email"`
+			Password json.RawMessage `json:"password"`
+		}
+
+		authenticateRequest := requestObject{}
+
+		if err := requestDecoder.Decode(&authenticateRequest); err != nil {
+			srv.logger.Error("failed to decode request: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		user, err := srv.store.GetByEmail(authenticateRequest.Email)
+		if err != nil {
+			srv.logger.Error("failed to find user by email: ", err)
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(`{"error":"A user with that email was not found"}`))
+			return
+		}
+
+		if !user.CheckPassword(authenticateRequest.Password) {
+			srv.logger.Error("password check failed")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(`{"error":"A user with that email and password was not found"}`))
+			return
+		}
+
+		token, err := srv.auth.GenerateToken(user)
+		if err != nil {
+			srv.logger.Error("failed to generate JWT: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(`{"error":"Failed to create authentication token"}`))
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(fmt.Sprintf("{\"token\":\"%s\"}", token)))
 	}
 }
