@@ -2,7 +2,6 @@
 // sources:
 // 1563449552_create_user_table.down.sql
 // 1563449552_create_user_table.up.sql
-// migrations.go
 package migrations
 
 import (
@@ -119,26 +118,6 @@ func _1563449552_create_user_tableUpSql() (*asset, error) {
 	return a, nil
 }
 
-var _migrationsGo = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
-
-func migrationsGoBytes() ([]byte, error) {
-	return bindataRead(
-		_migrationsGo,
-		"migrations.go",
-	)
-}
-
-func migrationsGo() (*asset, error) {
-	bytes, err := migrationsGoBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "migrations.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1563713337, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -193,7 +172,6 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"1563449552_create_user_table.down.sql": _1563449552_create_user_tableDownSql,
 	"1563449552_create_user_table.up.sql":   _1563449552_create_user_tableUpSql,
-	"migrations.go":                         migrationsGo,
 }
 
 // AssetDir returns the file names below a certain
@@ -239,7 +217,6 @@ type bintree struct {
 var _bintree = &bintree{nil, map[string]*bintree{
 	"1563449552_create_user_table.down.sql": &bintree{_1563449552_create_user_tableDownSql, map[string]*bintree{}},
 	"1563449552_create_user_table.up.sql":   &bintree{_1563449552_create_user_tableUpSql, map[string]*bintree{}},
-	"migrations.go":                         &bintree{migrationsGo, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory

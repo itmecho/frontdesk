@@ -21,4 +21,4 @@ migration:
 build-migrations:
 	go install github.com/go-bindata/go-bindata/...
 	cd pkg/store/postgres/migrations; \
-	$(GOPATH)/bin/go-bindata -pkg migrations -o migrations.go .
+	$(GOPATH)/bin/go-bindata -ignore migrations.go -pkg migrations -o migrations.go .
