@@ -15,17 +15,23 @@ var (
 	ErrInvalidToken = errors.New("Token is invalid")
 )
 
-// Authenticator handles generating and parsing auth tokens
-type Authenticator struct {
+// Authenticator describes how an authenticator should operate
+type Authenticator interface {
+	GenerateToken(*types.User) (string, error)
+	CheckToken(string) error
+}
+
+// JWTAuthenticator handles generating and parsing JWTs
+type JWTAuthenticator struct {
 	secret []byte
 }
 
-// New returns a new instance of and Authenticator
-func New(secret []byte) (Authenticator, error) {
+// NewJWTAuthenticator returns a new instance of a JWTAuthenticator
+func NewJWTAuthenticator(secret []byte) (Authenticator, error) {
 	if len(secret) == 0 {
-		return Authenticator{}, ErrInvalidSecret
+		return JWTAuthenticator{}, ErrInvalidSecret
 	}
-	return Authenticator{secret}, nil
+	return JWTAuthenticator{secret}, nil
 }
 
 type claims struct {
@@ -34,7 +40,7 @@ type claims struct {
 }
 
 // GenerateToken takes a user and generates a JWT containing their user ID
-func (a Authenticator) GenerateToken(u *types.User) (string, error) {
+func (a JWTAuthenticator) GenerateToken(u *types.User) (string, error) {
 	c := claims{
 		u.ID,
 		jwt.StandardClaims{
@@ -48,7 +54,7 @@ func (a Authenticator) GenerateToken(u *types.User) (string, error) {
 }
 
 // CheckToken attempts to parse an auth token
-func (a Authenticator) CheckToken(tokenString string) error {
+func (a JWTAuthenticator) CheckToken(tokenString string) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return a.secret, nil
 	})

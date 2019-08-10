@@ -17,8 +17,8 @@ type Server struct {
 	store  store.Store
 }
 
-// NewServer returns a new server populated with the given store
-func NewServer(port int, logger *logrus.Logger, s store.Store, auth authenticator.Authenticator) Server {
+// New returns a new server populated with the given store
+func New(port int, logger *logrus.Logger, s store.Store, auth authenticator.Authenticator) Server {
 	httpSrv := &http.Server{
 		Addr: fmt.Sprintf(":%d", port),
 	}

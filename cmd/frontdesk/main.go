@@ -26,12 +26,12 @@ func main() {
 		logger.Fatal("Failed to migrate the database: ", err)
 	}
 
-	auth, err := authenticator.New([]byte(authSecret))
+	auth, err := authenticator.NewJWTAuthenticator([]byte(authSecret))
 	if err != nil {
 		logger.Fatal("Failed to create authenticator: ", err)
 	}
 
-	srv := server.NewServer(port, logger, db, auth)
+	srv := server.New(port, logger, db, auth)
 
 	logger.Infof("ready to handle requests on port %d", port)
 	if err = srv.ListenAndServe(); err != nil {
